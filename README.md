@@ -1,17 +1,21 @@
 
-# 🚀 FastAPI Task Manager API  
-A secure, fully‑tested Task Management API built with **FastAPI**, **JWT authentication**, **SQLAlchemy**, and **Pydantic v2** — now paired with a **Streamlit frontend** (`my_frontend.py`) that provides a clean, interactive UI for managing tasks.
+# 🚀 Full‑Stack Task Manager  
+A secure, full‑stack Task Management application built with **FastAPI**, **JWT authentication**, **SQLAlchemy**, and **Pydantic v2**, paired with a modern **Streamlit frontend** and an optional **OpenAI‑powered AI assistant**.
+
+This project demonstrates complete CRUD functionality, authentication, dashboard analytics, and an interactive chat assistant with streaming responses and mock fallback mode.
 
 ---
 
 ## 📌 Features
 
-### 🔐 Authentication & Authorization
+### 🔐 Authentication & Authorization (FastAPI)
 - User registration  
 - Secure password hashing (Passlib)  
 - JWT login + token issuance  
 - Protected routes using `HTTPBearer`  
 - User‑scoped access (users can only access their own tasks)
+
+---
 
 ### 📝 Task Management (Backend + Frontend)
 - Create tasks  
@@ -22,21 +26,38 @@ A secure, fully‑tested Task Management API built with **FastAPI**, **JWT authe
 - Delete tasks  
 - AI suggestion endpoint (`/tasks/{id}/suggest`)
 
-### 🎨 Streamlit Frontend (`my_frontend.py`)
+---
+
+### 🎨 Streamlit Frontend (`app_ai.py`)
 - Login screen with session‑based JWT storage  
-- Dashboard metrics (total tasks, completed, pending, priority breakdown)  
+- Dashboard metrics (total tasks, completed, pending)  
+- Dataframe view of tasks  
+- Bar chart visualization  
 - Task creation form  
 - Interactive task list  
   - Priority filtering  
   - Completed filtering  
   - Search filtering  
-  - Completion toggle (checkbox → PATCH)  
+  - Completion toggle  
   - Delete buttons  
 - Automatic UI refresh using `st.rerun()`  
-- Clean column‑based layout for task interaction  
-- Fully integrated with FastAPI backend
+- Clean column‑based layout  
+- Offline fallback using `mock_data.py` when backend is unreachable
 
-### 🧪 Testing
+---
+
+### 🤖 AI Assistant (`ai_chat.py`)
+- Real OpenAI streaming responses  
+- Mock streaming fallback when API fails or credits are exhausted  
+- Customizable system prompt  
+- Technical + task‑specific context injection  
+- Chat history stored in Streamlit session state  
+- Safe error handling and graceful fallback  
+- Supports multiple OpenAI models (`gpt‑4o‑mini`, `gpt‑4o`)
+
+---
+
+### 🧪 Testing (Backend)
 - Full pytest suite  
 - In‑memory SQLite test database  
 - Tests for:
@@ -49,19 +70,11 @@ A secure, fully‑tested Task Management API built with **FastAPI**, **JWT authe
   - Nonexistent tasks (404)  
   - Suggestion endpoint  
 
-### 🧱 Clean Architecture
-- Routers  
-- Models  
-- Schemas  
-- Auth utilities  
-- Config + environment settings  
-- Dependency‑injected database sessions  
-- Streamlit UI separated cleanly from API logic
-
 ---
 
 ## 📂 Project Structure
 
+### Backend (Module 5)
 ```
 app/
 │
@@ -84,12 +97,10 @@ app/
 ├── auth.py
 ├── database.py
 ├── config.py
-├── main.py
-└── my_frontend.py   <-- Streamlit UI
+└── main.py
 ```
 
 Tests:
-
 ```
 app/tests/
 │
@@ -99,20 +110,34 @@ app/tests/
 
 ---
 
-## ⚙️ Running the Frontend
+### Frontend (Module 6)
+```
+AI_ready_App/
+│
+├── app_ai.py           # Main Streamlit app
+├── ai_chat.py          # AI assistant + streaming logic
+├── api_client.py       # All FastAPI communication
+├── mock_data.py        # Offline fallback data
+├── requirements.txt    # Frontend dependencies
+└── .gitignore          # Ignore secrets, venv, cache
+```
+
+---
+
+## ⚙️ Running the Application
 
 ### 1. Start the FastAPI backend
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### 2. Run the Streamlit frontend
+### 2. Start the Streamlit frontend
 ```bash
-streamlit run app/my_frontend.py
+streamlit run app_ai.py
 ```
 
 ### 3. Open the UI  
-Navigate to:
+Visit:
 
 ```
 http://localhost:8501
@@ -125,27 +150,30 @@ http://localhost:8501
 ### ✔ Modular Architecture  
 Routers, models, schemas, and utilities are separated for clarity and maintainability.
 
-### ✔ Streamlit Frontend Separation  
-The UI lives in `my_frontend.py`, keeping presentation logic separate from API logic while still tightly integrated through HTTP requests.
+### ✔ API Client Abstraction  
+All HTTP communication is centralized in `api_client.py`, keeping the UI clean.
 
-### ✔ Full CRUD Support  
-Both backend and frontend support create, read, update, and delete operations — including interactive completion toggling.
+### ✔ Streamlit Session State  
+Used for JWT persistence, chat history, and stable UI behavior across reruns.
+
+### ✔ AI Fallback Mode  
+If OpenAI fails (rate limit, invalid key, no credits), the app automatically switches to mock streaming.
 
 ### ✔ Dashboard Metrics  
-The frontend computes real‑time task analytics for a more professional user experience.
+Real‑time analytics give users insight into task completion and workload.
 
-### ✔ JWT Authentication  
-Tokens stored in session state allow secure, persistent login across Streamlit reruns.
+### ✔ Clean Separation  
+Backend handles business logic and authentication; frontend handles presentation and interaction.
 
 ---
 
 ## 💡 Reflection
 
 ### **Challenge**
-Synchronizing backend CRUD operations with a reactive Streamlit UI.
+Synchronizing backend CRUD operations with Streamlit’s reactive rerun model.
 
 ### **Solution**
-Use `st.session_state` for auth persistence and `st.rerun()` after every mutation to keep the UI consistent.
+Store tokens and chat history in `st.session_state` and use `st.rerun()` after every mutation to keep the UI consistent.
 
 ### **What I’d Add With More Time**
 - Editable modal for task updates  
@@ -154,11 +182,10 @@ Use `st.session_state` for auth persistence and `st.rerun()` after every mutatio
 - Real AI suggestions using OpenAI or Azure OpenAI  
 - Admin roles  
 - Refresh tokens  
+- WebSocket real‑time updates  
 
 ---
 
 ## 📜 Author
-Grant Eberhardt
-
----
+**Grant Eberhardt**
 
